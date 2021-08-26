@@ -15,7 +15,7 @@ public class HibernateConfig {
     @Bean
     public static SessionFactory getSessionFactory() {
         try {
-            return new Configuration().configure(new File("hibernate.cgf.xml")).buildSessionFactory();
+            return new Configuration().configure(new File("src/main/resources/hibernate.cgf.xml")).buildSessionFactory();
         }
         catch (Throwable ex) {
             System.err.println("Initial SessionFactory creation failed." + ex);
