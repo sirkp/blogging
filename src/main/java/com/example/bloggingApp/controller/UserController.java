@@ -1,6 +1,5 @@
 package com.example.bloggingApp.controller;
 
-import java.util.UUID;
 
 import javax.validation.Valid;
 

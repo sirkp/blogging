@@ -1,5 +1,6 @@
 package com.example.bloggingApp.configurations;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +21,10 @@ import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 @Configuration
 @EnableAuthorizationServer
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
-    
+
+    private static final String CLIENT_ID = "fooClientId";
+    private static final String CLIENT_SECRET = "secret";
+
     @Autowired
     @Qualifier("authenticationManagerBean")
     private AuthenticationManager authenticationManager;
@@ -36,12 +40,12 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
         clients.inMemory()
-            .withClient("fooClientId").secret(new BCryptPasswordEncoder().encode("secret"))
+            .withClient(CLIENT_ID).secret(new BCryptPasswordEncoder().encode(CLIENT_SECRET))
             .authorizedGrantTypes("password", "authorization_code", "refresh_token").scopes("read","write")
             .authorities("ROLE_CLIENT", "ROLE_TRUSTED_CLIENT", "USER","ADMIN")
             .autoApprove(true)
-            .accessTokenValiditySeconds(3600)//Access token is only valid for 1 hour.
-            .refreshTokenValiditySeconds(86400);//Refresh token is only valid for  1 day.
+            .accessTokenValiditySeconds(3600)
+            .refreshTokenValiditySeconds(86400);
     }
 
     @Override

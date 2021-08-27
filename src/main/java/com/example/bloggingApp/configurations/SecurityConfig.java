@@ -21,6 +21,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
+	private static final String TOKEN_ENDPOINT = "/oauth/token";
+
 	@Autowired
 	UserDetailsServiceImpl userDetailsService;
 	
@@ -28,9 +30,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.csrf().disable().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-		.and().authorizeRequests().antMatchers(HttpMethod.POST, "/oauth/token").permitAll();
-        // .and().authorizeRequests().antMatchers("/").permitAll()
-        // .anyRequest().authenticated();
+		.and().authorizeRequests().antMatchers(HttpMethod.POST, TOKEN_ENDPOINT).permitAll();
 	}
 
 	@Bean
@@ -54,7 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+	public void configureGlobal(AuthenticationManagerBuilder auth) {
 		auth.authenticationProvider(authenticationProvider());
 	}
 }

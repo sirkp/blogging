@@ -10,6 +10,7 @@ import com.example.bloggingApp.repository.UserRepository;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -27,6 +28,8 @@ public class UserService {
 
         User user = modelMapper.map(userRequestDTO, User.class);
         user.setUuid(UUID.randomUUID().toString());
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        user.setRole();
 
         user = userRepository.save(user);
     
