@@ -34,6 +34,13 @@ public class UserController {
 
     @PostMapping(path = USERS_ENDPOINT)
     public ResponseEntity<UserResponseDTO> createUser(@Valid @RequestBody UserRequestDTO userRequestDTO) {
-        return new ResponseEntity<UserResponseDTO>(userService.saveUser(userRequestDTO), HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.saveUser(userRequestDTO), HttpStatus.CREATED);
     }
+
+    @GetMapping(path = "/secured")
+    public String securedEndpoint() {
+        return "Hello from secured endpoint";
+    }
+
+    
 }
