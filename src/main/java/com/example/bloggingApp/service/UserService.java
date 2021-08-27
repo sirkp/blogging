@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.example.bloggingApp.DTO.UserRequestDTO;
 import com.example.bloggingApp.DTO.UserResponseDTO;
 import com.example.bloggingApp.entities.User;
+import com.example.bloggingApp.exceptions.UserServiceException;
 import com.example.bloggingApp.repository.UserRepository;
 
 import org.modelmapper.ModelMapper;
@@ -20,6 +21,10 @@ public class UserService {
     @Autowired ModelMapper modelMapper;
 
     public UserResponseDTO saveUser(UserRequestDTO userRequestDTO) {
+        if (userRepository.findByEmail(userRequestDTO.getEmail()) != null) {
+            throw new UserServiceException(userRequestDTO.getEmail() + " already exists");
+        }
+
         User user = modelMapper.map(userRequestDTO, User.class);
         user.setUuid(UUID.randomUUID().toString());
 

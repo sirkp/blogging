@@ -1,11 +1,9 @@
 package com.example.bloggingApp.utils;
 
-import java.util.Date;
 import java.util.List;
 
 import com.example.bloggingApp.DTO.ErrorMessage;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;

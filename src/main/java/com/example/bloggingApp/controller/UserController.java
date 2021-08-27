@@ -6,9 +6,7 @@ import javax.validation.Valid;
 
 import com.example.bloggingApp.DTO.UserRequestDTO;
 import com.example.bloggingApp.DTO.UserResponseDTO;
-import com.example.bloggingApp.entities.User;
 import com.example.bloggingApp.globals.GlobalConstants;
-import com.example.bloggingApp.repository.UserRepository;
 import com.example.bloggingApp.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
