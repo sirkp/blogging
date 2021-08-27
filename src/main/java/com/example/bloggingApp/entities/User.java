@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.Index;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -42,7 +44,8 @@ public class User implements Serializable {
     @Column(name = "name", unique = false, nullable = false)
     private String name;
 
-    @Column(name = "role", unique = false, nullable = false)
+    @Column(name = "role", unique = false)
+    @ColumnDefault("'User'")
     private String role;
 
     @Override

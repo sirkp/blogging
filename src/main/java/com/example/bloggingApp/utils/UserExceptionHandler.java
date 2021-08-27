@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.example.bloggingApp.DTO.ErrorMessage;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -27,4 +28,11 @@ public class UserExceptionHandler {
         ErrorMessage errorMessage = new ErrorMessage(sb.toString());
         return new ResponseEntity<>(errorMessage,  HttpStatus.BAD_REQUEST);
     }
+
+    // @ExceptionHandler(DataIntegrityViolationException.class)
+    // public ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
+    //     ErrorMessage errorMessage = new ErrorMessage("duplicate entry");
+    //     Exception e = (Exception) ex.getMostSpecificCause();
+    //     return new ResponseEntity<>(errorMessage,  HttpStatus.BAD_REQUEST);
+    // }
 }
