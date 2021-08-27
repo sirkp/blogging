@@ -1,5 +1,6 @@
 package com.example.bloggingApp.service;
 
+import java.util.Arrays;
 import java.util.UUID;
 
 import com.example.bloggingApp.DTO.UserRequestDTO;
@@ -10,16 +11,22 @@ import com.example.bloggingApp.repository.UserRepository;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired ModelMapper modelMapper;
+    @Autowired 
+    ModelMapper modelMapper;
 
     public UserResponseDTO saveUser(UserRequestDTO userRequestDTO) {
         if (userRepository.findByEmail(userRequestDTO.getEmail()) != null) {
@@ -34,6 +41,13 @@ public class UserService {
         user = userRepository.save(user);
     
         return modelMapper.map(user, UserResponseDTO.class);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email);
+		GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole());
+		return new org.springframework.security.core.userdetails.User(user.getEmail(), user.getPassword(), Arrays.asList(authority));
     }
 
     

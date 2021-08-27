@@ -1,6 +1,6 @@
 package com.example.bloggingApp.configurations;
 
-import com.example.bloggingApp.service.UserDetailsServiceImpl;
+import com.example.bloggingApp.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +24,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private static final String TOKEN_ENDPOINT = "/oauth/token";
 
 	@Autowired
-	UserDetailsServiceImpl userDetailsService;
+	UserService userDetailsService;
 	
 	
 	@Override
