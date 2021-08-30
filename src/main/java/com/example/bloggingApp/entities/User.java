@@ -1,14 +1,16 @@
 package com.example.bloggingApp.entities;
 
-import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.AccessLevel;
@@ -22,10 +24,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "users", indexes = {@Index(name = "uuid_index", columnList = "uuid", unique = true),
                                   @Index(name = "email_index", columnList = "email", unique = true)})
-public class User implements Serializable {
-
-    private static final long serialVersionUID = 4L;
-    
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
@@ -42,6 +41,9 @@ public class User implements Serializable {
 
     @Column(name = "name", unique = false, nullable = false)
     private String name;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Article> articles;
 
     @Column(name = "role", unique = false, nullable = false)
     @Setter(AccessLevel.NONE)
