@@ -26,11 +26,4 @@ public class UserExceptionHandler {
         ErrorMessage errorMessage = new ErrorMessage(sb.toString());
         return new ResponseEntity<>(errorMessage,  HttpStatus.BAD_REQUEST);
     }
-
-    // @ExceptionHandler(DataIntegrityViolationException.class)
-    // public ResponseEntity<?> handleDataIntegrityViolationException(DataIntegrityViolationException ex, WebRequest request) {
-    //     ErrorMessage errorMessage = new ErrorMessage("duplicate entry");
-    //     Exception e = (Exception) ex.getMostSpecificCause();
-    //     return new ResponseEntity<>(errorMessage,  HttpStatus.BAD_REQUEST);
-    // }
 }

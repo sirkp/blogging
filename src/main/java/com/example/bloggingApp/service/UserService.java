@@ -50,7 +50,7 @@ public class UserService implements UserDetailsService {
         return userRepository.findByEmail(email);
     }
 
-    public boolean isUserInPayloadSameAsLoggedInUser(String email) {
+    public boolean isUserSameAsLoggedInUser(String email) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return email.equals(authentication.getName());
     }

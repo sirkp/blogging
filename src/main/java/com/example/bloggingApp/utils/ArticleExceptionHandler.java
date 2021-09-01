@@ -13,10 +13,6 @@ import org.springframework.web.context.request.WebRequest;
 @ControllerAdvice
 public class ArticleExceptionHandler {
     
-    @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<?> handleEntityNotFoundException(EntityNotFoundException ex, WebRequest request) {
-        ErrorMessage message = new ErrorMessage(ex.getMessage());
-        return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
-    }
+    
 
 }

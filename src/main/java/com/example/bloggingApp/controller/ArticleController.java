@@ -11,6 +11,7 @@ import javax.validation.Valid;
 
 import com.example.bloggingApp.DTO.ArticleRequestDTO;
 import com.example.bloggingApp.DTO.ArticleResponseDTO;
+import com.example.bloggingApp.DTO.ArticleUpdateRequestDTO;
 import com.example.bloggingApp.entities.Article;
 import com.example.bloggingApp.entities.Tag;
 import com.example.bloggingApp.entities.User;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,7 +47,7 @@ public class ArticleController {
     @GetMapping(path = ARTICLE_ENDPOINT + ARTICLE_SLUG)
     public ResponseEntity<ArticleResponseDTO> getArticle(@PathVariable String articleSlug) throws Exception {
 
-        return new ResponseEntity<>(articleService.getArticleBySlug(articleSlug), HttpStatus.OK);
+        return new ResponseEntity<>(articleService.getArticle(articleSlug), HttpStatus.OK);
     }
 
     @PostMapping(path = ARTICLE_ENDPOINT)
@@ -59,4 +61,9 @@ public class ArticleController {
         articleService.deleteArticleBySlug(articleSlug);           
         return new ResponseEntity<>("article deleted", HttpStatus.OK);
     }
+
+    // @PutMapping(path = ARTICLE_ENDPOINT + ARTICLE_SLUG) 
+    // public ResponseEntity<ArticleResponseDTO> updateArticle(@PathVariable String articleSlug, @RequestBody ArticleUpdateRequestDTO articleUpdateRequestDTO)  {
+
+    // }
 }

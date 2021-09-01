@@ -17,5 +17,4 @@ public class App {
 	public ModelMapper getModelMapper() {
 		return new ModelMapper();
 	}
-
 }

@@ -7,13 +7,13 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityNotFoundException;
-
 import com.example.bloggingApp.DTO.ArticleRequestDTO;
 import com.example.bloggingApp.DTO.ArticleResponseDTO;
+import com.example.bloggingApp.DTO.ArticleUpdateRequestDTO;
 import com.example.bloggingApp.entities.Article;
 import com.example.bloggingApp.entities.Tag;
 import com.example.bloggingApp.entities.User;
+import com.example.bloggingApp.exceptions.CustomEntityNotFoundException;
 import com.example.bloggingApp.exceptions.NotAuthorizedException;
 import com.example.bloggingApp.repository.ArticleRepository;
 
@@ -49,9 +49,9 @@ public class ArticleService {
     }
     
     public ArticleResponseDTO createArticle(ArticleRequestDTO articleRequestDTO) {
-        if (!userService.isUserInPayloadSameAsLoggedInUser(articleRequestDTO.getEmail())) {
-            throw new NotAuthorizedException("you can't create articles for others");
-        }
+        checkUserSameAsLoggedInUser(
+                articleRequestDTO.getEmail(),
+                "you can't create articles for others");
 
         Article article = modelMapper.map(articleRequestDTO, Article.class);
         User user = userService.getUserByEmail(articleRequestDTO.getEmail());
@@ -65,22 +65,53 @@ public class ArticleService {
         article = articleRepository.save(article);
         article.setSlug(generateSlug(article.getTitle() + "-" + article.getId()));
         article = articleRepository.save(article);
-
+        
         return modelMapper.map(article, ArticleResponseDTO.class);
     }
-
-    public ArticleResponseDTO getArticleBySlug(String slug) {
-        Article article = articleRepository.findBySlug(slug)
-                .orElseThrow();
-        return modelMapper.map(article, ArticleResponseDTO.class);
+    
+    public ArticleResponseDTO getArticle(String slug) {
+        return modelMapper.map(getArticleBySlug(slug), ArticleResponseDTO.class);
     }
-
+    
     public void deleteArticleBySlug(String slug) {
-        Long noOfArticlesDeleted = articleRepository.deleteBySlug(slug);
-        if (noOfArticlesDeleted == 0) {
-            throw new EntityNotFoundException("No such article exist");
+        Article article = getArticleBySlug(slug);
+        
+        checkUserSameAsLoggedInUser(
+                article.getUser().getEmail(),
+                "you can only delete your articles");
+        
+        articleRepository.delete(article);
+    }
+    
+    public ArticleResponseDTO updateArticle(ArticleUpdateRequestDTO articleUpdateRequestDTO, String slug) {
+        Article article = getArticleBySlug(slug);
+        
+        checkUserSameAsLoggedInUser(
+                article.getUser().getEmail(),
+                "you can only update your articles");
+        
+        Set<Tag> tags = articleUpdateRequestDTO.getTags().stream()
+        .map(name -> tagService.createTag(name)).collect(Collectors.toSet());
+        
+        article.setTitle(articleUpdateRequestDTO.getTitle());
+        article.setContent(articleUpdateRequestDTO.getContent());
+        article.setTags(tags);
+        article.setSlug(generateSlug(article.getTitle() + "-" + article.getId()));
+
+        article = articleRepository.save(article);
+
+        return modelMapper.map(article, ArticleResponseDTO.class);
+    } 
+
+    private void checkUserSameAsLoggedInUser(String email, String message) {
+        if(!userService.isUserSameAsLoggedInUser(email)) {
+            throw new NotAuthorizedException(message);
         }
     }
 
-
+    private Article getArticleBySlug(String slug) {
+        return articleRepository.findBySlug(slug)
+            .orElseThrow(() -> new CustomEntityNotFoundException("No such article exists"));
+    }
+    
 }
