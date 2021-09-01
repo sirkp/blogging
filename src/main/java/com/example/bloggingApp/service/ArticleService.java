@@ -7,12 +7,14 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityNotFoundException;
+
 import com.example.bloggingApp.DTO.ArticleRequestDTO;
 import com.example.bloggingApp.DTO.ArticleResponseDTO;
 import com.example.bloggingApp.entities.Article;
 import com.example.bloggingApp.entities.Tag;
 import com.example.bloggingApp.entities.User;
-import com.example.bloggingApp.exceptions.UserInPayloadNotSameAsLoggedInUserException;
+import com.example.bloggingApp.exceptions.NotAuthorizedException;
 import com.example.bloggingApp.repository.ArticleRepository;
 
 import org.modelmapper.ModelMapper;
@@ -48,7 +50,7 @@ public class ArticleService {
     
     public ArticleResponseDTO createArticle(ArticleRequestDTO articleRequestDTO) {
         if (!userService.isUserInPayloadSameAsLoggedInUser(articleRequestDTO.getEmail())) {
-            throw new UserInPayloadNotSameAsLoggedInUserException("you can't create articles for others");
+            throw new NotAuthorizedException("you can't create articles for others");
         }
 
         Article article = modelMapper.map(articleRequestDTO, Article.class);
@@ -67,6 +69,18 @@ public class ArticleService {
         return modelMapper.map(article, ArticleResponseDTO.class);
     }
 
+    public ArticleResponseDTO getArticleBySlug(String slug) {
+        Article article = articleRepository.findBySlug(slug)
+                .orElseThrow();
+        return modelMapper.map(article, ArticleResponseDTO.class);
+    }
+
+    public void deleteArticleBySlug(String slug) {
+        Long noOfArticlesDeleted = articleRepository.deleteBySlug(slug);
+        if (noOfArticlesDeleted == 0) {
+            throw new EntityNotFoundException("No such article exist");
+        }
+    }
 
 
 }

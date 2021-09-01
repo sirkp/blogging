@@ -21,6 +21,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -54,6 +55,7 @@ public class Article  {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "fk_user", nullable = false)
+    @Setter(AccessLevel.NONE)
     private User user;
 
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
@@ -70,5 +72,15 @@ public class Article  {
     public void removeTag(Tag tag) {
         this.getTags().remove(tag);
         tag.getArticles().remove(this);
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+        user.getArticles().add(this);
+    }
+
+    public void removeUser() {
+        this.user = null;
+        user.getArticles().remove(this);
     }
 }

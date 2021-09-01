@@ -34,39 +34,29 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping(path = GlobalConstants.APP_NAME)
 public class ArticleController {
+
     public static final String ARTICLE_ENDPOINT = "/articles";
     public static final String ARTICLE_SLUG = "/{articleSlug}";
 
+    @Autowired 
+    ArticleService articleService;
+    
 
-    @Autowired ArticleService articleService;
+    @GetMapping(path = ARTICLE_ENDPOINT + ARTICLE_SLUG)
+    public ResponseEntity<ArticleResponseDTO> getArticle(@PathVariable String articleSlug) throws Exception {
+
+        return new ResponseEntity<>(articleService.getArticleBySlug(articleSlug), HttpStatus.OK);
+    }
 
     @PostMapping(path = ARTICLE_ENDPOINT)
     public ResponseEntity<ArticleResponseDTO> createArticle(@Valid @RequestBody ArticleRequestDTO articleRequestDTO) {
         ArticleResponseDTO articleResponseDTO = articleService.createArticle(articleRequestDTO);
         return new ResponseEntity<>(articleResponseDTO, HttpStatus.CREATED);
     }
-
     
-    @GetMapping(path = ARTICLE_ENDPOINT + ARTICLE_SLUG)
-    public ResponseEntity<ArticleResponseDTO> getArticle(@PathVariable Integer articleSlug) throws Exception {
-        // Article article = articleRepository.findById(articleSlug)
-        //         .orElseThrow(() -> new Exception("drfedrf"));
-        
-        // List<String> tagNames = new ArrayList<>();
-        // for (Tag tag: article.getTags()) {
-        //     tagNames.add(tag.getName());
-        // }
-
-        return new ResponseEntity<>(new ArticleResponseDTO(), HttpStatus.OK);
+    @DeleteMapping(path = ARTICLE_ENDPOINT + ARTICLE_SLUG)
+    public ResponseEntity<String> deleteArticle(@PathVariable String articleSlug) {
+        articleService.deleteArticleBySlug(articleSlug);           
+        return new ResponseEntity<>("article deleted", HttpStatus.OK);
     }
-    
-    // @DeleteMapping(path = ARTICLE_ENDPOINT + "/{id}")
-    // public ResponseEntity<String> deleteArticle(@PathVariable Integer id) {
-    //     Article article = articleRepository.findById(id)
-    //             .orElseThrow();
-                
-    //     articleRepository.delete(article);
-
-    //     return new ResponseEntity<>("article deleted", HttpStatus.OK);
-    // }
 }
