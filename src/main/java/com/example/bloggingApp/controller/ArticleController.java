@@ -37,60 +37,36 @@ public class ArticleController {
     public static final String ARTICLE_ENDPOINT = "/articles";
     public static final String ARTICLE_SLUG = "/{articleSlug}";
 
-    @Autowired
-    private ArticleRepository articleRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired ArticleService articleService;
 
     @PostMapping(path = ARTICLE_ENDPOINT)
     public ResponseEntity<ArticleResponseDTO> createArticle(@Valid @RequestBody ArticleRequestDTO articleRequestDTO) {
-        Article article = new Article();
-        article.setContent(articleRequestDTO.getContent());
-        article.setTitle(articleRequestDTO.getTitle());
-        User user = userRepository.findByEmail(articleRequestDTO.getEmail());
-        article.setUser(user);
-        article.setSlug(articleRequestDTO.getTitle());
-        
-        List<String> tagNames = articleRequestDTO.getTags();
-        for (String name: tagNames) {
-            article.addTag(articleService.createTag(name));
-        }
-
-        article = articleRepository.save(article);
-
-        return new ResponseEntity<>(new ArticleResponseDTO(article.getSlug(), article.getTitle(),
-                 article.getContent(), article.getPublishedDate(), tagNames), HttpStatus.CREATED);
+        ArticleResponseDTO articleResponseDTO = articleService.createArticle(articleRequestDTO);
+        return new ResponseEntity<>(articleResponseDTO, HttpStatus.CREATED);
     }
 
     
     @GetMapping(path = ARTICLE_ENDPOINT + ARTICLE_SLUG)
     public ResponseEntity<ArticleResponseDTO> getArticle(@PathVariable Integer articleSlug) throws Exception {
-        Article article = articleRepository.findById(articleSlug)
-                .orElseThrow(() -> new Exception("drfedrf"));
+        // Article article = articleRepository.findById(articleSlug)
+        //         .orElseThrow(() -> new Exception("drfedrf"));
         
-        List<String> tagNames = new ArrayList<>();
-        for (Tag tag: article.getTags()) {
-            tagNames.add(tag.getName());
-        }
+        // List<String> tagNames = new ArrayList<>();
+        // for (Tag tag: article.getTags()) {
+        //     tagNames.add(tag.getName());
+        // }
 
-        return new ResponseEntity<>(new ArticleResponseDTO(article.getSlug(), article.getTitle(),
-                article.getContent(), article.getPublishedDate(), tagNames), HttpStatus.OK);
+        return new ResponseEntity<>(new ArticleResponseDTO(), HttpStatus.OK);
     }
     
-    @DeleteMapping(path = ARTICLE_ENDPOINT + "/{id}")
-    public ResponseEntity<String> deleteArticle(@PathVariable Integer id) {
-        Article article = articleRepository.findById(id)
-                .orElseThrow();
+    // @DeleteMapping(path = ARTICLE_ENDPOINT + "/{id}")
+    // public ResponseEntity<String> deleteArticle(@PathVariable Integer id) {
+    //     Article article = articleRepository.findById(id)
+    //             .orElseThrow();
                 
-        Set<Tag> tags = new HashSet<Tag>(article.getTags());
-        for(Tag tag: tags) {
-            article.removeTag(tag);
-        }
-        articleRepository.delete(article);
+    //     articleRepository.delete(article);
 
-        return new ResponseEntity<>("article deleted", HttpStatus.OK);
-    }
+    //     return new ResponseEntity<>("article deleted", HttpStatus.OK);
+    // }
 }

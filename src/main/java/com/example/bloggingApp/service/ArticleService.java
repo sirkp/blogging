@@ -1,28 +1,72 @@
 package com.example.bloggingApp.service;
 
-import com.example.bloggingApp.entities.Tag;
-import com.example.bloggingApp.repository.ArticleRepository;
-import com.example.bloggingApp.repository.TagRepository;
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
+import java.util.Locale;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import com.example.bloggingApp.DTO.ArticleRequestDTO;
+import com.example.bloggingApp.DTO.ArticleResponseDTO;
+import com.example.bloggingApp.entities.Article;
+import com.example.bloggingApp.entities.Tag;
+import com.example.bloggingApp.entities.User;
+import com.example.bloggingApp.exceptions.UserInPayloadNotSameAsLoggedInUserException;
+import com.example.bloggingApp.repository.ArticleRepository;
+
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class ArticleService {
+    
+    private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
+    private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
     
     @Autowired
     private ArticleRepository articleRepository;
 
     @Autowired
-    private TagRepository tagRepository;
+    private UserService userService;
 
-    public Tag createTag(String name) {
-        Tag tag = tagRepository.findByName(name);
-        if (tag == null) {
-            tag = new Tag();
-            tag.setName(name);
-            tag = tagRepository.save(tag);
-        }
-        return tag;
+    @Autowired
+    private TagService tagService;
+
+    @Autowired 
+    private ModelMapper modelMapper;
+
+
+    private String generateSlug(String input) {
+        String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
+        String normalized = Normalizer.normalize(nowhitespace, Form.NFD);
+        String slug = NONLATIN.matcher(normalized).replaceAll("");
+        return slug.toLowerCase(Locale.ENGLISH);
     }
+    
+    public ArticleResponseDTO createArticle(ArticleRequestDTO articleRequestDTO) {
+        if (!userService.isUserInPayloadSameAsLoggedInUser(articleRequestDTO.getEmail())) {
+            throw new UserInPayloadNotSameAsLoggedInUserException("you can't create articles for others");
+        }
+
+        Article article = modelMapper.map(articleRequestDTO, Article.class);
+        User user = userService.getUserByEmail(articleRequestDTO.getEmail());
+        Set<Tag> tags = articleRequestDTO.getTags().stream()
+                .map(name -> tagService.createTag(name)).collect(Collectors.toSet());
+
+        article.setUser(user);
+        article.setTags(tags);
+        article.setSlug(article.getTitle());
+
+        article = articleRepository.save(article);
+        article.setSlug(generateSlug(article.getTitle() + "-" + article.getId()));
+        article = articleRepository.save(article);
+
+        return modelMapper.map(article, ArticleResponseDTO.class);
+    }
+
+
+
 }

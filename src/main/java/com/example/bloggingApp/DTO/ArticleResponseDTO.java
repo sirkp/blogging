@@ -19,6 +19,6 @@ public class ArticleResponseDTO {
 
     private Date date;
 
-    private List<String> tags;
+    private List<TagDTO> tags;
     
 }

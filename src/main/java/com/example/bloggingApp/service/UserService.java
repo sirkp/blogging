@@ -9,10 +9,12 @@ import com.example.bloggingApp.entities.User;
 import com.example.bloggingApp.exceptions.UserServiceException;
 import com.example.bloggingApp.repository.UserRepository;
 
+import org.springframework.security.core.Authentication;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -41,6 +43,16 @@ public class UserService implements UserDetailsService {
         user = userRepository.save(user);
     
         return modelMapper.map(user, UserResponseDTO.class);
+    }
+
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    public boolean isUserInPayloadSameAsLoggedInUser(String email) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return email.equals(authentication.getName());
     }
 
     @Override
