@@ -62,8 +62,8 @@ public class ArticleController {
         return new ResponseEntity<>("article deleted", HttpStatus.OK);
     }
 
-    // @PutMapping(path = ARTICLE_ENDPOINT + ARTICLE_SLUG) 
-    // public ResponseEntity<ArticleResponseDTO> updateArticle(@PathVariable String articleSlug, @RequestBody ArticleUpdateRequestDTO articleUpdateRequestDTO)  {
-
-    // }
+    @PutMapping(path = ARTICLE_ENDPOINT + ARTICLE_SLUG) 
+    public ResponseEntity<ArticleResponseDTO> updateArticle(@PathVariable String articleSlug, @Valid @RequestBody ArticleUpdateRequestDTO articleUpdateRequestDTO)  {
+        return new ResponseEntity<>(articleService.updateArticle(articleUpdateRequestDTO, articleSlug), HttpStatus.OK);
+    }
 }
