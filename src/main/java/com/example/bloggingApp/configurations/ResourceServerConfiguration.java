@@ -22,6 +22,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
         http.authorizeRequests()
             .antMatchers("/blog/home", "/blog/users").permitAll()
             .antMatchers(HttpMethod.GET, "/blog/articles/{articleSlug}").permitAll()
+            .antMatchers(HttpMethod.GET, "/blog/tags").permitAll()
             .anyRequest().authenticated();
     }
 }
