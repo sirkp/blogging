@@ -35,7 +35,7 @@ public class ArticleController {
     
 
     @GetMapping(path = ARTICLE_ENDPOINT + ARTICLE_SLUG)
-    public ResponseEntity<ArticleResponseDTO> getArticle(@PathVariable(name = "article_slug") String articleSlug) throws Exception {
+    public ResponseEntity<ArticleResponseDTO> getArticle(@PathVariable(name = "article_slug") String articleSlug) {
 
         return new ResponseEntity<>(articleService.getArticle(articleSlug), HttpStatus.OK);
     }

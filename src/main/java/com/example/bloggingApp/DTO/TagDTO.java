@@ -11,6 +11,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TagDTO {
     
-    @NotNull(message = "tag can't be null")
+    @NotNull(message = "tag name can't be null")
     String name;
 }

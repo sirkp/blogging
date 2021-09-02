@@ -2,8 +2,8 @@ package com.example.bloggingApp.DTO;
 
 import java.util.List;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -28,5 +28,5 @@ public class ArticleRequestDTO {
 
     @NotNull(message = "tags can't be null")
     @Size(min = 1, message = "there should be atleast one tag")
-    List<@NotNull(message = "tag can't be null") String> tags;
+    List<@Valid @NotNull(message = "tag can't be null") TagDTO> tags;
 }

@@ -11,6 +11,7 @@ import com.example.bloggingApp.DTO.ArticleRequestDTO;
 import com.example.bloggingApp.DTO.ArticleResponseDTO;
 import com.example.bloggingApp.DTO.ArticleUpdateRequestDTO;
 import com.example.bloggingApp.DTO.ListTagDTO;
+import com.example.bloggingApp.DTO.TagDTO;
 import com.example.bloggingApp.entities.Article;
 import com.example.bloggingApp.entities.Tag;
 import com.example.bloggingApp.entities.User;
@@ -57,7 +58,7 @@ public class ArticleService {
         Article article = modelMapper.map(articleRequestDTO, Article.class);
         User user = userService.getUserByEmail(articleRequestDTO.getEmail());
         Set<Tag> tags = articleRequestDTO.getTags().stream()
-                .map(name -> tagService.createTag(name)).collect(Collectors.toSet());
+                .map(tagDTO -> tagService.createTag(tagDTO)).collect(Collectors.toSet());
 
         article.setUser(user);
         article.setTags(tags);
@@ -92,7 +93,7 @@ public class ArticleService {
                 "you can only update your articles");
         
         Set<Tag> tags = articleUpdateRequestDTO.getTags().stream()
-        .map(name -> tagService.createTag(name)).collect(Collectors.toSet());
+        .map(tagDTO -> tagService.createTag(tagDTO)).collect(Collectors.toSet());
         
         article.setTitle(articleUpdateRequestDTO.getTitle());
         article.setContent(articleUpdateRequestDTO.getContent());
@@ -111,8 +112,8 @@ public class ArticleService {
                 article.getUser().getEmail(),
                 "you can only update your articles");
         
-        for (String tagName: listTagDTO.getTags()) {
-            article.addTag(tagService.createTag(tagName));
+        for (TagDTO tagDTO: listTagDTO.getTags()) {
+            article.addTag(tagService.createTag(tagDTO));
         }        
 
         article = articleRepository.save(article);
