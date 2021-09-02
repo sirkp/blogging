@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import com.example.bloggingApp.DTO.ArticleRequestDTO;
 import com.example.bloggingApp.DTO.ArticleResponseDTO;
 import com.example.bloggingApp.DTO.ArticleUpdateRequestDTO;
+import com.example.bloggingApp.DTO.ListTagDTO;
 import com.example.bloggingApp.entities.Article;
 import com.example.bloggingApp.entities.Tag;
 import com.example.bloggingApp.entities.User;
@@ -102,6 +103,22 @@ public class ArticleService {
 
         return modelMapper.map(article, ArticleResponseDTO.class);
     } 
+
+    public ArticleResponseDTO addTagService(ListTagDTO listTagDTO, String slug) {
+        Article article = getArticleBySlug(slug);
+        
+        checkUserSameAsLoggedInUser(
+                article.getUser().getEmail(),
+                "you can only update your articles");
+        
+        for (String tagName: listTagDTO.getTags()) {
+            article.addTag(tagService.createTag(tagName));
+        }        
+
+        article = articleRepository.save(article);
+
+        return modelMapper.map(article, ArticleResponseDTO.class);
+    }
 
     private void checkUserSameAsLoggedInUser(String email, String message) {
         if(!userService.isUserSameAsLoggedInUser(email)) {
