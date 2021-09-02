@@ -38,6 +38,9 @@ public class Article  {
     @Column(name = "id")
     private Integer id;
 
+    @Column(name = "uuid", unique = true, nullable = false)
+    private String uuid;
+
     @Column(name = "title", nullable = false, length = 512)
     private String title;
 
@@ -61,7 +64,13 @@ public class Article  {
     @JoinTable(name = "articles_tags"
             , joinColumns = @JoinColumn(name = "article_id", referencedColumnName = "id")
             , inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
+    @Setter(AccessLevel.NONE)
     private Set<Tag> tags = new HashSet<>();
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+        tags.stream().forEach((tag) -> this.addTag(tag));
+    }
 
     public void addTag(Tag tag) {
         this.getTags().add(tag);

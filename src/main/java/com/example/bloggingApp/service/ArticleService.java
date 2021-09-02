@@ -4,6 +4,7 @@ import java.text.Normalizer;
 import java.text.Normalizer.Form;
 import java.util.Locale;
 import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -58,14 +59,12 @@ public class ArticleService {
         Article article = modelMapper.map(articleRequestDTO, Article.class);
         User user = userService.getUserByEmail(articleRequestDTO.getEmail());
         Set<Tag> tags = articleRequestDTO.getTags().stream()
-                .map(tagDTO -> tagService.createTag(tagDTO)).collect(Collectors.toSet());
+                .map(tagDTO -> tagService.getTag(tagDTO)).collect(Collectors.toSet());
 
         article.setUser(user);
         article.setTags(tags);
-        article.setSlug(article.getTitle());
-
-        article = articleRepository.save(article);
-        article.setSlug(generateSlug(article.getTitle() + "-" + article.getId()));
+        article.setUuid(UUID.randomUUID().toString());
+        article.setSlug(generateSlug(article.getTitle() + "-" + article.getUuid()));
         article = articleRepository.save(article);
         
         return modelMapper.map(article, ArticleResponseDTO.class);
@@ -93,12 +92,12 @@ public class ArticleService {
                 "you can only update your articles");
         
         Set<Tag> tags = articleUpdateRequestDTO.getTags().stream()
-        .map(tagDTO -> tagService.createTag(tagDTO)).collect(Collectors.toSet());
+        .map(tagDTO -> tagService.getTag(tagDTO)).collect(Collectors.toSet());
         
         article.setTitle(articleUpdateRequestDTO.getTitle());
         article.setContent(articleUpdateRequestDTO.getContent());
         article.setTags(tags);
-        article.setSlug(generateSlug(article.getTitle() + "-" + article.getId()));
+        article.setSlug(generateSlug(article.getTitle() + "-" + article.getUuid()));
 
         article = articleRepository.save(article);
 
@@ -113,7 +112,7 @@ public class ArticleService {
                 "you can only update your articles");
         
         for (TagDTO tagDTO: listTagDTO.getTags()) {
-            article.addTag(tagService.createTag(tagDTO));
+            article.addTag(tagService.getTag(tagDTO));
         }        
 
         article = articleRepository.save(article);

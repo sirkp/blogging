@@ -4,6 +4,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.example.bloggingApp.DTO.ListTagDTO;
@@ -20,14 +21,13 @@ public class TagService {
     @Autowired
     ModelMapper modelMapper;
 
-    public Tag createTag(TagDTO tagDTO) {
-        Tag tag = tagRepository.findByName(tagDTO.getName());
-        if (tag == null) {
-            tag = new Tag();
-            tag.setName(tagDTO.getName());
-            tag = tagRepository.save(tag);
+    public Tag getTag(TagDTO tagDTO) {
+        Optional<Tag> optonalTag = tagRepository.findByName(tagDTO.getName());
+        if (optonalTag.isPresent()) {
+            return optonalTag.get();
+        } else {
+            return modelMapper.map(tagDTO, Tag.class);
         }
-        return tag;
     }
 
     public ListTagDTO getAllTagService() {
