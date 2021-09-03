@@ -1,12 +1,16 @@
 package com.example.bloggingApp.controller;
 
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import com.example.bloggingApp.DTO.ArticleRequestDTO;
 import com.example.bloggingApp.DTO.ArticleResponseDTO;
 import com.example.bloggingApp.DTO.ArticleUpdateRequestDTO;
+import com.example.bloggingApp.DTO.ArticlesResponseDTO;
 import com.example.bloggingApp.DTO.ListTagDTO;
+import com.example.bloggingApp.DTO.TagDTO;
 import com.example.bloggingApp.globals.GlobalConstants;
 import com.example.bloggingApp.service.ArticleService;
 
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -67,4 +72,18 @@ public class ArticleController {
 
         return new ResponseEntity<>(articleService.addTagService(listTagDTO, articleSlug), HttpStatus.OK);
     }
+
+    @GetMapping(path = ARTICLE_ENDPOINT)
+    public ResponseEntity<ArticlesResponseDTO> getArticles(
+            @RequestParam(name = "query", required = false) String query,
+            @RequestParam(name = "user", required = false) String email, 
+            @RequestParam(name = "tags", required = false) List<String> tags,
+            @RequestParam(name = "page", required = false) Integer page
+        ) {
+
+        List<ArticleResponseDTO> articleResponseDTOs = articleService.getArticles(email, tags, query, page);
+        
+        return new ResponseEntity<>(new ArticlesResponseDTO(articleResponseDTOs), HttpStatus.OK);
+    }
+
 }

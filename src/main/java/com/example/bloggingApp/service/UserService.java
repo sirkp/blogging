@@ -6,6 +6,7 @@ import java.util.UUID;
 import com.example.bloggingApp.DTO.UserRequestDTO;
 import com.example.bloggingApp.DTO.UserResponseDTO;
 import com.example.bloggingApp.entities.User;
+import com.example.bloggingApp.exceptions.CustomEntityNotFoundException;
 import com.example.bloggingApp.exceptions.UserServiceException;
 import com.example.bloggingApp.repository.UserRepository;
 
@@ -45,11 +46,6 @@ public class UserService implements UserDetailsService {
         return modelMapper.map(user, UserResponseDTO.class);
     }
 
-
-    public User getUserByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
     public boolean isUserSameAsLoggedInUser(String email) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return email.equals(authentication.getName());
@@ -57,10 +53,15 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userRepository.findByEmail(email);
+        User user = getUserByEmail(email);
 		GrantedAuthority authority = new SimpleGrantedAuthority(user.getRole());
 		return new org.springframework.security.core.userdetails
                 .User(user.getEmail(), user.getPassword(), Arrays.asList(authority));
+    }
+
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+            .orElseThrow(() -> new CustomEntityNotFoundException("No user exists with email: " + email));
     }
 
     

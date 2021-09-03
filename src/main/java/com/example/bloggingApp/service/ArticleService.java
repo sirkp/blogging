@@ -2,6 +2,7 @@ package com.example.bloggingApp.service;
 
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
@@ -118,6 +119,18 @@ public class ArticleService {
         article = articleRepository.save(article);
 
         return modelMapper.map(article, ArticleResponseDTO.class);
+    }
+
+    public List<ArticleResponseDTO> getArticles(String email, List<String> tags, String query, Integer page) {
+        
+        Boolean isTagEmptyOrNull = false;
+        if ( tags == null || tags.isEmpty()) isTagEmptyOrNull = true;
+
+        List<Article> articles = articleRepository.findByUser(email, query, tags, isTagEmptyOrNull);
+
+        return articles.stream().map(
+                article -> modelMapper.map(article, ArticleResponseDTO.class)
+            ).collect(Collectors.toList());
     }
 
     private void checkUserSameAsLoggedInUser(String email, String message) {
