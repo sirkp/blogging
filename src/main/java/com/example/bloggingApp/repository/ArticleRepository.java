@@ -4,12 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import com.example.bloggingApp.entities.Article;
-import com.example.bloggingApp.entities.User;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-import org.springframework.lang.Nullable;
 import org.springframework.transaction.annotation.Transactional;
 
 
@@ -29,7 +28,8 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
             @Param("email") String email,
             @Param("title") String title, 
             @Param("tags") List<String> tags, 
-            @Param("isTagEmptyOrNull") Boolean isTagEmptyOrNull
+            @Param("isTagEmptyOrNull") Boolean isTagEmptyOrNull,
+            Pageable pageable
         );
 
 }

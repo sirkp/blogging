@@ -23,6 +23,9 @@ import com.example.bloggingApp.repository.ArticleRepository;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
@@ -31,6 +34,8 @@ public class ArticleService {
     
     private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
     private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
+
+    private static final int PAGE_SIZE = 4;
     
     @Autowired
     private ArticleRepository articleRepository;
@@ -67,7 +72,6 @@ public class ArticleService {
         article.setUuid(UUID.randomUUID().toString());
         article.setSlug(generateSlug(article.getTitle() + "-" + article.getUuid()));
         article = articleRepository.save(article);
-        
         return modelMapper.map(article, ArticleResponseDTO.class);
     }
     
@@ -124,9 +128,18 @@ public class ArticleService {
     public List<ArticleResponseDTO> getArticles(String email, List<String> tags, String query, Integer page) {
         
         Boolean isTagEmptyOrNull = false;
-        if ( tags == null || tags.isEmpty()) isTagEmptyOrNull = true;
+        if (tags == null || tags.isEmpty()) isTagEmptyOrNull = true;
+        
+        int pageNumber = (page == null || page.intValue()<0) ? 0 : page.intValue();
 
-        List<Article> articles = articleRepository.findByUser(email, query, tags, isTagEmptyOrNull);
+        Pageable pageable = Pageable.unpaged();
+        if (page != null)
+            pageable = PageRequest.of(pageNumber, PAGE_SIZE,
+                         Sort.by("publishedDate").descending());
+
+        List<Article> articles = articleRepository.findByUser(email, query, tags, isTagEmptyOrNull,
+                pageable);
+
 
         return articles.stream().map(
                 article -> modelMapper.map(article, ArticleResponseDTO.class)
