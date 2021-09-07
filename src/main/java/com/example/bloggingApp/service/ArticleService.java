@@ -20,6 +20,7 @@ import com.example.bloggingApp.entities.User;
 import com.example.bloggingApp.exceptions.CustomEntityNotFoundException;
 import com.example.bloggingApp.exceptions.NotAuthorizedException;
 import com.example.bloggingApp.repository.ArticleRepository;
+import com.example.bloggingApp.repositoryService.ArticleRepositoryService;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,9 @@ public class ArticleService {
 
     @Autowired
     private TagService tagService;
+
+    @Autowired
+    private ArticleRepositoryService articleRepositoryService;
 
     @Autowired 
     private ModelMapper modelMapper;
@@ -86,7 +90,7 @@ public class ArticleService {
                 article.getUser().getEmail(),
                 "you can only delete your articles");
         
-        articleRepository.delete(article);
+        articleRepositoryService.deleteArticleAndTagOrphan(article);
     }
     
     public ArticleResponseDTO updateArticle(ArticleUpdateRequestDTO articleUpdateRequestDTO, String slug) {

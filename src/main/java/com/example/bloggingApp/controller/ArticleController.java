@@ -10,7 +10,6 @@ import com.example.bloggingApp.DTO.ArticleResponseDTO;
 import com.example.bloggingApp.DTO.ArticleUpdateRequestDTO;
 import com.example.bloggingApp.DTO.ArticlesResponseDTO;
 import com.example.bloggingApp.DTO.ListTagDTO;
-import com.example.bloggingApp.DTO.TagDTO;
 import com.example.bloggingApp.globals.GlobalConstants;
 import com.example.bloggingApp.service.ArticleService;
 
