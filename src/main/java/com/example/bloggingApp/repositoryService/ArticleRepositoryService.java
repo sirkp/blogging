@@ -10,6 +10,7 @@ import com.example.bloggingApp.repository.TagRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ArticleRepositoryService{
@@ -20,6 +21,7 @@ public class ArticleRepositoryService{
     @Autowired
     TagRepository tagRepository;
 
+    @Transactional
     public void deleteArticleAndTagOrphan(Article article) {
         Set<Tag> tags = new HashSet<Tag>(article.getTags());
 

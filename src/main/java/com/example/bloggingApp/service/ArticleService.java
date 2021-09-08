@@ -19,6 +19,7 @@ import com.example.bloggingApp.entities.Tag;
 import com.example.bloggingApp.entities.User;
 import com.example.bloggingApp.exceptions.CustomEntityNotFoundException;
 import com.example.bloggingApp.exceptions.NotAuthorizedException;
+import com.example.bloggingApp.exceptions.TransactionFailedException;
 import com.example.bloggingApp.repository.ArticleRepository;
 import com.example.bloggingApp.repositoryService.ArticleRepositoryService;
 
@@ -90,7 +91,11 @@ public class ArticleService {
                 article.getUser().getEmail(),
                 "you can only delete your articles");
         
-        articleRepositoryService.deleteArticleAndTagOrphan(article);
+        try {
+            articleRepositoryService.deleteArticleAndTagOrphan(article);
+        } catch (RuntimeException e) {
+            throw new TransactionFailedException("Something went wrong, could not delete Article");
+        }
     }
     
     public ArticleResponseDTO updateArticle(ArticleUpdateRequestDTO articleUpdateRequestDTO, String slug) {
