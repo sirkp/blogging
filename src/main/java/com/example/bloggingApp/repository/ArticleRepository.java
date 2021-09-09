@@ -23,7 +23,7 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
             + "WHERE (:email IS NULL OR user.email = :email) "
             + "AND (:isTagEmptyOrNull IS TRUE OR tag.name IN :tags) "
             + "AND (:title IS NULL OR article.title LIKE %:title%) "
-            + "ORDER BY article.publishedDate DESC LIMIT 0, "
+            + "ORDER BY article.publishedDate DESC"
     )
     List<Article> findByUser(
             @Param("email") String email,
