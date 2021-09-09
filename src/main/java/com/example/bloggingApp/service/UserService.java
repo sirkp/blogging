@@ -32,7 +32,7 @@ public class UserService implements UserDetailsService {
     ModelMapper modelMapper;
 
     public UserResponseDTO saveUser(UserRequestDTO userRequestDTO) {
-        if (userRepository.findByEmail(userRequestDTO.getEmail()) != null) {
+        if (!userRepository.findByEmail(userRequestDTO.getEmail()).isEmpty()) {
             throw new UserServiceException(userRequestDTO.getEmail() + " already exists");
         }
 

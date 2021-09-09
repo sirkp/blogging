@@ -143,8 +143,7 @@ public class ArticleService {
 
         Pageable pageable = Pageable.unpaged();
         if (page != null)
-            pageable = PageRequest.of(pageNumber, PAGE_SIZE,
-                         Sort.by("publishedDate").descending());
+            pageable = PageRequest.of(pageNumber, PAGE_SIZE);
 
         List<Article> articles = articleRepository.findByUser(email, query, tags, isTagEmptyOrNull,
                 pageable);

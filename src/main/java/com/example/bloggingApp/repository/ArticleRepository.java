@@ -21,8 +21,9 @@ public interface ArticleRepository extends JpaRepository<Article, Integer> {
     @Query("SELECT DISTINCT article FROM "
             + "Article article JOIN article.user user JOIN article.tags tag "
             + "WHERE (:email IS NULL OR user.email = :email) "
-            + "AND (:isTagEmptyOrNull IS TRUE OR tag.name IN :tags)"
-            + "AND (:title IS NULL OR article.title LIKE %:title%)"
+            + "AND (:isTagEmptyOrNull IS TRUE OR tag.name IN :tags) "
+            + "AND (:title IS NULL OR article.title LIKE %:title%) "
+            + "ORDER BY article.publishedDate DESC LIMIT 0, "
     )
     List<Article> findByUser(
             @Param("email") String email,
