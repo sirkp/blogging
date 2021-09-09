@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class UserResponseDTO {
 
-    private String uuid;
-
     private String name;
     
     private String email;

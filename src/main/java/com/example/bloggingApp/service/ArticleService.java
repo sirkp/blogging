@@ -111,7 +111,6 @@ public class ArticleService {
         article.setTitle(articleUpdateRequestDTO.getTitle());
         article.setContent(articleUpdateRequestDTO.getContent());
         article.setTags(tags);
-        article.setSlug(generateSlug(article.getTitle() + "-" + article.getUuid()));
 
         article = articleRepository.save(article);
 
