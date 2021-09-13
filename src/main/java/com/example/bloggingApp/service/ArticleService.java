@@ -1,12 +1,8 @@
 package com.example.bloggingApp.service;
 
-import java.text.Normalizer;
-import java.text.Normalizer.Form;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.UUID;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import com.example.bloggingApp.DTO.ArticleRequestDTO;
@@ -17,25 +13,20 @@ import com.example.bloggingApp.DTO.TagDTO;
 import com.example.bloggingApp.entities.Article;
 import com.example.bloggingApp.entities.Tag;
 import com.example.bloggingApp.entities.User;
-import com.example.bloggingApp.exceptions.CustomEntityNotFoundException;
-import com.example.bloggingApp.exceptions.NotAuthorizedException;
 import com.example.bloggingApp.exceptions.TransactionFailedException;
 import com.example.bloggingApp.repository.ArticleRepository;
 import com.example.bloggingApp.repositoryService.ArticleRepositoryService;
+import com.example.bloggingApp.utils.ArticleServiceHelper;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 
 @Service
 public class ArticleService {
-    
-    private static final Pattern NONLATIN = Pattern.compile("[^\\w-]");
-    private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
 
     private static final int PAGE_SIZE = 4;
     
@@ -54,16 +45,11 @@ public class ArticleService {
     @Autowired 
     private ModelMapper modelMapper;
 
-
-    private String generateSlug(String input) {
-        String nowhitespace = WHITESPACE.matcher(input).replaceAll("-");
-        String normalized = Normalizer.normalize(nowhitespace, Form.NFD);
-        String slug = NONLATIN.matcher(normalized).replaceAll("");
-        return slug.toLowerCase(Locale.ENGLISH);
-    }
+    @Autowired
+    ArticleServiceHelper articleServiceHelper;
     
     public ArticleResponseDTO createArticle(ArticleRequestDTO articleRequestDTO) {
-        checkUserSameAsLoggedInUser(
+        articleServiceHelper.checkUserSameAsLoggedInUser(
                 articleRequestDTO.getEmail(),
                 "you can't create articles for others");
 
@@ -75,19 +61,19 @@ public class ArticleService {
         article.setUser(user);
         article.setTags(tags);
         article.setUuid(UUID.randomUUID().toString());
-        article.setSlug(generateSlug(article.getTitle() + "-" + article.getUuid()));
+        article.setSlug(articleServiceHelper.generateSlug(article.getTitle() + "-" + article.getUuid()));
         article = articleRepository.save(article);
         return modelMapper.map(article, ArticleResponseDTO.class);
     }
     
     public ArticleResponseDTO getArticle(String slug) {
-        return modelMapper.map(getArticleBySlug(slug), ArticleResponseDTO.class);
+        return modelMapper.map(articleServiceHelper.getArticleBySlug(slug), ArticleResponseDTO.class);
     }
     
     public void deleteArticleBySlug(String slug) {
-        Article article = getArticleBySlug(slug);
+        Article article = articleServiceHelper.getArticleBySlug(slug);
         
-        checkUserSameAsLoggedInUser(
+        articleServiceHelper.checkUserSameAsLoggedInUser(
                 article.getUser().getEmail(),
                 "you can only delete your articles");
         
@@ -99,9 +85,9 @@ public class ArticleService {
     }
     
     public ArticleResponseDTO updateArticle(ArticleUpdateRequestDTO articleUpdateRequestDTO, String slug) {
-        Article article = getArticleBySlug(slug);
+        Article article = articleServiceHelper.getArticleBySlug(slug);
         
-        checkUserSameAsLoggedInUser(
+        articleServiceHelper.checkUserSameAsLoggedInUser(
                 article.getUser().getEmail(),
                 "you can only update your articles");
         
@@ -118,9 +104,9 @@ public class ArticleService {
     } 
 
     public ArticleResponseDTO addTagService(ListTagDTO listTagDTO, String slug) {
-        Article article = getArticleBySlug(slug);
+        Article article = articleServiceHelper.getArticleBySlug(slug);
         
-        checkUserSameAsLoggedInUser(
+        articleServiceHelper.checkUserSameAsLoggedInUser(
                 article.getUser().getEmail(),
                 "you can only update your articles");
         
@@ -153,15 +139,5 @@ public class ArticleService {
             ).collect(Collectors.toList());
     }
 
-    private void checkUserSameAsLoggedInUser(String email, String message) {
-        if(!userService.isUserSameAsLoggedInUser(email)) {
-            throw new NotAuthorizedException(message);
-        }
-    }
-
-    private Article getArticleBySlug(String slug) {
-        return articleRepository.findBySlug(slug)
-            .orElseThrow(() -> new CustomEntityNotFoundException("No such article exists"));
-    }
     
 }
